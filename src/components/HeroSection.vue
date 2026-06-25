@@ -1,7 +1,7 @@
 <template>
   <section class="hero">
     <video class="hero-background" autoplay loop muted playsinline>
-      <source src="/images/hero/hero_background_original.webm" type="video/webm">
+      <source :src="`${BASE}images/hero/hero_background_original.webm`" type="video/webm">
     </video>
     <div ref="lottieRef" class="xaloc-logo"></div>
     <div class="hero-tagline">
@@ -43,6 +43,7 @@ import lottie from 'lottie-web'
 import { useLanguage } from '../composables/useLanguage.js'
 
 const { t, currentLanguage } = useLanguage()
+const BASE = import.meta.env.BASE_URL
 
 const lottieRef = ref(null)
 let lottieInstance = null

@@ -19,11 +19,11 @@
         }"
       >
         <div class="person-column">
-          <img :src="`/images/opinions/person-${i + 1}.webp`" loading="lazy" :alt="`Foto de cliente ${i + 1}`" class="client-photo">
+          <img :src="`${BASE}images/opinions/person-${i + 1}.webp`" loading="lazy" :alt="`Foto de cliente ${i + 1}`" class="client-photo">
         </div>
         <div class="opinion-column">
           <div class="opinion-stars">
-            <img v-for="s in 5" :key="s" src="/images/opinions/star.webp" loading="lazy" alt="Estrella" class="star-icon">
+            <img v-for="s in 5" :key="s" :src="starSrc" loading="lazy" alt="Estrella" class="star-icon">
           </div>
           <p class="client-name">{{ opinion.name }}</p>
           <p class="client-opinion">{{ t(opinion.key) }}</p>
@@ -38,6 +38,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useLanguage } from '../composables/useLanguage.js'
 
 const { t } = useLanguage()
+
+const BASE = import.meta.env.BASE_URL
+const starSrc = `${BASE}images/opinions/star.webp`
 
 const opinions = [
   { name: 'Rubén Doblas', key: 'client-opinion-1' },

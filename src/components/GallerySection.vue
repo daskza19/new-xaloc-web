@@ -1,7 +1,7 @@
 <template>
   <section class="gallery-section" id="gallery">
     <div class="gallery-header">
-      <img src="/images/effects/effect_04.webp" alt="Effect 4" class="effect-4">
+      <img :src="`${BASE}images/effects/effect_04.webp`" alt="Effect 4" class="effect-4">
       <h2 class="gallery-title">{{ t('nav-gallery') }}</h2>
     </div>
 
@@ -26,7 +26,7 @@
           <div
             class="folder-icon"
             :class="{ 'has-logo': gallery.logo }"
-            :style="gallery.logo ? `background-image:url('${gallery.logo}');background-size:contain;background-position:center;background-repeat:no-repeat;` : ''"
+            :style="gallery.logo ? `background-image:url('${assetUrl(gallery.logo)}');background-size:contain;background-position:center;background-repeat:no-repeat;` : ''"
           >
             <svg v-if="!gallery.logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
@@ -61,7 +61,7 @@
           </button>
           <div class="album-header-center">
             <div class="album-logo" :class="{ 'has-logo': currentGallery?.logo }">
-              <img v-if="currentGallery?.logo" :src="currentGallery.logo" :alt="currentGallery.title">
+              <img v-if="currentGallery?.logo" :src="assetUrl(currentGallery.logo)" :alt="currentGallery.title">
             </div>
             <h2 v-if="!currentGallery?.logo" class="album-title">{{ currentGallery?.title }}</h2>
           </div>
@@ -80,7 +80,7 @@
               class="photo-item"
               @click="openViewer(i)"
             >
-              <img :src="src" :alt="`Foto ${i + 1}`" loading="lazy">
+              <img :src="assetUrl(src)" :alt="`Foto ${i + 1}`" loading="lazy">
               <div class="photo-item-overlay">
                 <p class="photo-item-name">{{ filename(src) }}</p>
               </div>
@@ -128,7 +128,7 @@
                 <img
                   class="carousel-image"
                   :class="{ loaded: loadedSet.has(i) }"
-                  :src="loadedSet.has(i) ? src : undefined"
+                  :src="loadedSet.has(i) ? assetUrl(src) : undefined"
                   :alt="`Foto ${i + 1}`"
                   draggable="false"
                 >
@@ -154,7 +154,7 @@
         <div class="photo-viewer-download">
           <a
             class="download-btn"
-            :href="photos[currentPhotoIndex]"
+            :href="assetUrl(photos[currentPhotoIndex])"
             :download="filename(photos[currentPhotoIndex] || '')"
           >
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -174,6 +174,12 @@ import { useLanguage } from '../composables/useLanguage.js'
 import galleriesData from 'virtual:gallery'
 
 const { t } = useLanguage()
+
+const BASE = import.meta.env.BASE_URL
+function assetUrl(path) {
+  if (!path) return path
+  return BASE + path.replace(/^\//, '')
+}
 
 // Data comes from the Vite plugin — no runtime fetch needed
 const galleries = ref(galleriesData)

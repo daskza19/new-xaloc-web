@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useLanguage } from '../composables/useLanguage.js'
 
 const { t, currentLanguage } = useLanguage()
@@ -39,12 +39,13 @@ const proposalRef = ref(null)
 const currentSlide = ref(0)
 const scrollProgress = ref(0)
 
+const BASE = import.meta.env.BASE_URL
 const slides = [
-  '/images/proposal/proposal-01.webp',
-  '/images/proposal/proposal-02.webp',
-  '/images/proposal/proposal-03.webp',
-  '/images/proposal/proposal-04.webp',
-  '/images/proposal/proposal-05.webp',
+  `${BASE}images/proposal/proposal-01.webp`,
+  `${BASE}images/proposal/proposal-02.webp`,
+  `${BASE}images/proposal/proposal-03.webp`,
+  `${BASE}images/proposal/proposal-04.webp`,
+  `${BASE}images/proposal/proposal-05.webp`,
 ]
 
 const subtitleWords = computed(() => t('proposal-subtitle').split(' '))
