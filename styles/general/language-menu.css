@@ -1,0 +1,325 @@
+/* Menú vertical - Solo dropdown de idiomas */
+#vertical-nav {
+    position: fixed;
+    top: 2vh;
+    right: 2vh;
+    z-index: 999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+/* Dropdown vertical de idiomas */
+.vertical-language-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.vertical-language-dropdown-toggle {
+    background-color: rgba(203, 178, 121, 0.9);
+    border: 0.15vh solid rgba(203, 178, 121, 1);
+    cursor: pointer;
+    padding: 0.7vh 1vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7vw;
+    border-radius: 1vh;
+    transition: all 0.3s ease;
+    min-width: 6vh;
+    min-height: 3.5vh;
+    box-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.3);
+}
+
+.vertical-language-dropdown-toggle:hover {
+    background-color: rgb(203, 178, 121);
+    transform: scale(1.05);
+}
+
+.vertical-language-dropdown-toggle img {
+    width: 2.5vh;
+    height: 2.5vh;
+    object-fit: cover;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.vertical-dropdown-arrow {
+    font-size: 1.3vh;
+    color: rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease;
+}
+
+.vertical-language-dropdown-toggle.open .vertical-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.vertical-language-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.7vh);
+    right: 0;
+    background-color: rgb(203, 178, 121);
+    border: 0.15vh solid rgba(0, 0, 0, 0.2);
+    border-radius: 1vh;
+    box-shadow: 0 0.7vh 1.5vh rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.vertical-language-dropdown-menu.open {
+    display: flex;
+}
+
+.vertical-language-dropdown-item {
+    background-color: transparent;
+    border: none;
+    padding: 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.vertical-language-dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.vertical-language-dropdown-item img {
+    width: 3vh;
+    height: 3vh;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.vertical-language-dropdown-item span {
+    display: none;
+}
+
+/* Ocultar menú vertical en pantallas horizontales */
+@media (min-aspect-ratio: 1/1) {
+    #vertical-nav {
+        display: none;
+    }
+}
+
+/* Ocultar barra horizontal en pantallas verticales */
+@media (max-aspect-ratio: 1/1) {
+    #horizontal-nav {
+        display: none;
+    }
+}
+
+/* Barra de navegación horizontal */
+#horizontal-nav {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    width: 80vw;
+    z-index: 998;
+    transition: all 0.4s ease;
+    /* El fondo y el efecto ticket van SOLO en el ::before */
+    background: none;
+}
+
+#horizontal-nav.sticky {
+    top: 1.5rem;
+    transform: translate(-50%, 0);
+}
+
+#horizontal-nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--primary-blur-color);
+    backdrop-filter: blur(1vh) grayscale(50%) brightness(60%);
+    border-style: inset;
+    border: 4px rgba(255,255,255,0.08);
+    mask-image:
+      radial-gradient(circle at top left, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at top right, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at bottom left, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at bottom right, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px));
+    -webkit-mask-image:
+      radial-gradient(circle at top left, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at top right, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at bottom left, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px)),
+      radial-gradient(circle at bottom right, transparent 0 var(--border-inverse), black calc(var(--border-inverse) + 1px));
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+    pointer-events: none;
+}
+
+#horizontal-nav > * {
+    position: relative;
+    z-index: 1;
+}
+
+.horizontal-nav-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh 1.75vh;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Dropdown de idiomas */
+.horizontal-language-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.language-dropdown-toggle {
+    background-color: var(--secondary-color);
+    border: 0.1vh solid var(--secondary-color-hover);
+    cursor: pointer;
+    padding: 0.75vh 1.5vh;
+    margin-right: 1vh;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--border-radius-low);
+    transition: all 0.3s ease;
+    min-width: 70px;
+}
+
+.language-dropdown-toggle:hover {
+    background-color: var(--secondary-color-hover);
+    border: 0.1vh solid var(--secondary-color-hover);
+}
+
+.language-dropdown-toggle img {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: var(--border-radius-low);
+}
+
+.dropdown-arrow {
+    font-size: 0.8rem;
+    color: var(--white-text-color);
+    transition: transform 0.3s ease;
+}
+
+.language-dropdown-toggle.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* --- HORIZONTAL LANGUAGE DROPDOWN BLUR EFFECT --- */
+.language-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 1rem);
+    right: 0;
+    background: var(--primary-blur-color, rgba(203, 178, 121, 0.85));
+    backdrop-filter: blur(1vh) grayscale(40%) brightness(70%);
+    border-radius: var(--border-radius-low);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    padding: 0.5vh 0.5vh;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.language-dropdown-menu.open {
+    display: flex;
+}
+
+.language-dropdown-item {
+    background: transparent;
+    border: none;
+    padding: 1vh 1.5vh;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    text-align: left;
+    width: 100%;
+    border-radius: var(--border-radius-low);
+}
+
+.language-dropdown-item:hover {
+    background: var(--primary-color, #cbb279);
+    color: var(--white-text-color, #fff);
+}
+
+.language-dropdown-item img {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+    border-radius: var(--border-radius-low);
+}
+
+.language-dropdown-item span {
+    color: var(--white-text-color);
+    font-family: "Google Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.horizontal-nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2vh;
+    align-items: center;
+    flex: 1;
+    max-width: 600px;
+}
+
+.horizontal-nav-link {
+    font-family: "Google Sans", sans-serif;
+    font-weight: bold;
+    color: var(--white-text-color);
+    text-decoration: none;
+    font-size: 2vh;
+    padding: 0.25vh 1.5vh;
+    transition: all 0.3s ease;
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+}
+
+.horizontal-nav-link:hover {
+    color: white;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color-hover);
+}
+
+.horizontal-nav-link.active {
+    color: white;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color-hover);
+}
+
+@media (max-width: 768px) {
+    #language-button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        top: 1rem;
+        left: 1rem;
+    }
+    
+    #language-menu {
+        width: 250px;
+        left: -250px;
+    }
+    
+    .language-option {
+        width: 150px;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+}

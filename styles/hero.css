@@ -1,0 +1,235 @@
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  position: relative;
+  background-color: #000000;
+  overflow-x: hidden;
+  min-height: 100%;
+  height: auto;
+}
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1;
+}
+.container {
+  position: relative;
+  text-align: center;
+  display: block;
+  flex-direction: column;
+  z-index: 1;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.hero{
+  position: relative;
+  overflow: hidden;
+  height: 110vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgb(0, 0, 0) 90%);
+}
+
+.hero-background {
+  top: -0.5rem;
+  left: -0.5rem;
+  position: absolute;
+  z-index: -1;
+  width: calc(100% + 1rem);
+  height: calc(100% - 1rem);
+  object-fit: cover;
+  filter: blur(0.25rem) brightness(0.5);
+}
+
+.xaloc-logo {
+  width: 34%;
+  min-width: 34vh;
+  max-width: 24vw;
+  margin-bottom: 5vh;
+  filter: blur(0.03vh);
+}
+
+/* Hero tagline */
+.hero-tagline {
+  position: relative;
+  z-index: 100;
+  margin-bottom: 15vh;
+  text-align: center;
+}
+
+.hero-tagline-text {
+  font-family: "Google Sans", sans-serif;
+  font-size: 2rem;
+  color: white;
+  margin: 0.5rem 0;
+  letter-spacing: 1px;
+  font-weight: 300;
+}
+
+.sparkle-word {
+  position: relative;
+  display: inline-block;
+  font-weight: 600;
+  color: rgb(203, 178, 121);
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+/* Contenedor de estrellas - del mismo tamaño que la palabra */
+.sparkle-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1000;
+}
+
+/* Estrellas individuales con animación de fade */
+.sparkle-star {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  animation: sparkle-fade var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+  z-index: 1001;
+}
+
+@keyframes sparkle-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: var(--max-opacity);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .hero-tagline-text {
+    font-size: 3vh;
+  }
+}
+
+.first-effect {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  height: 40vh;
+  opacity: 0.6;
+  filter: blur(0.01rem);
+  z-index: 55;
+}
+
+.second-effect {
+  position: absolute;
+  top: 50vh;
+  left: -1.5rem;
+  opacity: 0.6;
+  filter: blur(0.01rem);
+  z-index: 55;
+  height: 110vh;
+}
+
+.third-effect {
+  position: absolute;
+  top: 170vh;
+  right: -0.5rem;
+  height: 120vh;
+  width: auto;
+  opacity: 0.6;
+  filter: blur(0.01rem);
+}
+
+.effects {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+}
+
+.first-text-effect{
+    position: absolute;
+    top: -20vh;
+    right: -30vh;
+    height: 55vh;
+    rotate: -10deg;
+    width: auto;
+    z-index: 0;
+  }
+
+  .second-text-effect{
+    position: absolute;
+    top: -20vh;
+    right: -20vh;
+    height: 60vh;
+    width: auto;
+    z-index: 0;
+  }
+
+  .third-text-effect{
+    position: absolute;
+    top: -5vh;
+    right: -25vh;
+    height: 45vh;
+    rotate: 15deg;
+    z-index: -1;
+    width: auto;
+  }
+
+  .fourth-text-effect{
+    position: absolute;
+    top: 60vh;
+    left: -20vh;
+    z-index: -1;
+    height: 90vh;
+  }
+
+  .fifth-text-effect{
+    position: absolute;
+    top: 70vh;
+    left: -20vh;
+    z-index: -1;
+    height: 78vh;
+  }
+
+#text-path1, #text-path2, #text-path3{
+  fill: rgb(109, 95, 65);
+  font-weight: bold;
+  font-size: 5vh;
+}
+
+#text-path4, #text-path5 {
+  fill: rgb(203, 178, 121);
+  font-weight: bold;
+  font-size: 5vh;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  #text-path1, #text-path2, #text-path3, #text-path4, #text-path5 {
+    font-size: 3rem;
+  }
+
+  .third-effect {
+    width: 90vw;
+    height: auto;
+  }
+}
