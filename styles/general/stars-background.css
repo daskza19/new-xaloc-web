@@ -1,11 +1,15 @@
 /* Efecto de estrellas en el fondo */
+html {
+  overflow-x: hidden;
+}
+
 body {
   position: relative;
   overflow-x: hidden;
 }
 
 .stars-container {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
