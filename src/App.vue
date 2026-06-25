@@ -1,8 +1,6 @@
 <template>
-  <StarsBackground />
-  <WavesEffect />
+  <PixelBackground />
   <TheNavigation />
-  <div class="overlay"></div>
   <div class="container">
     <div class="effects">
       <img src="/images/effects/effect_00.webp" alt="Effect 0" class="first-effect">
@@ -18,8 +16,7 @@
 </template>
 
 <script setup>
-import StarsBackground from './components/StarsBackground.vue'
-import WavesEffect from './components/WavesEffect.vue'
+import PixelBackground from './components/PixelBackground.vue'
 import TheNavigation from './components/TheNavigation.vue'
 import HeroSection from './components/HeroSection.vue'
 import TypingSection from './components/TypingSection.vue'
