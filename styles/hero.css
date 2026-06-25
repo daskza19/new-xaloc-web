@@ -56,6 +56,7 @@ body {
   width: 34%;
   min-width: 34vh;
   max-width: 24vw;
+  aspect-ratio: 486 / 238;
   margin-bottom: 5vh;
   filter: blur(0.03vh);
 }

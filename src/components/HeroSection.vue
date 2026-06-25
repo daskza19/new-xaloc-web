@@ -1,7 +1,9 @@
 <template>
   <section class="hero">
-    <img src="/images/hero/hero_background.webp" alt="Hero background" class="hero-background" fetchpriority="high">
-    <img src="/images/hero/xaloc_logo.webp" alt="Xaloc Events LOGO" class="xaloc-logo">
+    <video class="hero-background" autoplay loop muted playsinline>
+      <source src="/images/hero/hero_background_original.webm" type="video/webm">
+    </video>
+    <div ref="lottieRef" class="xaloc-logo"></div>
     <div class="hero-tagline">
       <p class="hero-tagline-text">
         <span>{{ t('hero-tagline-1') }}</span>
@@ -37,9 +39,13 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import lottie from 'lottie-web'
 import { useLanguage } from '../composables/useLanguage.js'
 
 const { t, currentLanguage } = useLanguage()
+
+const lottieRef = ref(null)
+let lottieInstance = null
 
 const sparkleWordRef = ref(null)
 const path1Ref = ref(null)
@@ -102,6 +108,16 @@ function initSparkle() {
 }
 
 onMounted(() => {
+  if (lottieRef.value) {
+    lottieInstance = lottie.loadAnimation({
+      container: lottieRef.value,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/images/hero/xaloc_logo.json',
+    })
+  }
+
   const heroSection = document.querySelector('.hero')
   if (heroSection) {
     const observer = new IntersectionObserver(entries => {
@@ -116,6 +132,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (animationId) cancelAnimationFrame(animationId)
+  if (lottieInstance) lottieInstance.destroy()
 })
 
 watch(currentLanguage, () => {
