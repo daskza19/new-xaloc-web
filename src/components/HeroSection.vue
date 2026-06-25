@@ -115,7 +115,7 @@ onMounted(() => {
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: '/images/hero/xaloc_logo.json',
+      path: `${BASE}images/hero/xaloc_logo.json`,
     })
   }
 

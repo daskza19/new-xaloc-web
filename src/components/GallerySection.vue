@@ -249,7 +249,7 @@ function loadNearby(index) {
       next.add(i)
       loadedSet.value = next
     }
-    img.src = imgs[i]
+    img.src = assetUrl(imgs[i])
   })
 }
 

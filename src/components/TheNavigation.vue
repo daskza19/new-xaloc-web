@@ -12,15 +12,15 @@
       </button>
       <div class="vertical-language-dropdown-menu" :class="{ open: verticalDropdownOpen }">
         <button class="vertical-language-dropdown-item" @click="selectLanguage('ca')">
-          <img src="/images/nav/cat_flag.webp" alt="Català">
+          <img :src="flags.ca" alt="Català">
           <span>Català</span>
         </button>
         <button class="vertical-language-dropdown-item" @click="selectLanguage('es')">
-          <img src="/images/nav/esp_flag.webp" alt="Español">
+          <img :src="flags.es" alt="Español">
           <span>Español</span>
         </button>
         <button class="vertical-language-dropdown-item" @click="selectLanguage('en')">
-          <img src="/images/nav/eng_flag.webp" alt="English">
+          <img :src="flags.en" alt="English">
           <span>English</span>
         </button>
       </div>
@@ -32,7 +32,6 @@
     <div class="horizontal-nav-content">
       <div class="horizontal-nav-links">
         <a href="#about" class="horizontal-nav-link" :class="{ active: activeSection === 'about' }">{{ t('nav-about') }}</a>
-        <a href="#tickets" class="horizontal-nav-link" :class="{ active: activeSection === 'tickets' }">{{ t('nav-tickets') }}</a>
         <a href="#gallery" class="horizontal-nav-link" :class="{ active: activeSection === 'gallery' }">{{ t('nav-gallery') }}</a>
         <a href="#contact" class="horizontal-nav-link" :class="{ active: activeSection === 'contact' }">{{ t('nav-contact') }}</a>
       </div>
@@ -47,15 +46,15 @@
         </button>
         <div class="language-dropdown-menu" :class="{ open: horizontalDropdownOpen }">
           <button class="language-dropdown-item" @click="selectLanguage('ca')">
-            <img src="/images/nav/cat_flag.webp" alt="Català">
+            <img :src="flags.ca" alt="Català">
             <span>Català</span>
           </button>
           <button class="language-dropdown-item" @click="selectLanguage('es')">
-            <img src="/images/nav/esp_flag.webp" alt="Español">
+            <img :src="flags.es" alt="Español">
             <span>Español</span>
           </button>
           <button class="language-dropdown-item" @click="selectLanguage('en')">
-            <img src="/images/nav/eng_flag.webp" alt="English">
+            <img :src="flags.en" alt="English">
             <span>English</span>
           </button>
         </div>

@@ -51,11 +51,12 @@ const slides = [
 const subtitleWords = computed(() => t('proposal-subtitle').split(' '))
 
 const activeWordIndex = computed(() => {
-  return Math.floor(scrollProgress.value * subtitleWords.value.length)
+  const n = subtitleWords.value.length
+  return Math.min(Math.floor(scrollProgress.value * n), n - 1)
 })
 
 let slideInterval = null
-let scrollTicking = false
+let rafId = null
 
 function nextSlide() {
   currentSlide.value = (currentSlide.value + 1) % slides.length
@@ -65,28 +66,30 @@ function updateScroll() {
   if (!proposalRef.value) return
   const rect = proposalRef.value.getBoundingClientRect()
   const scrollDistance = rect.height - window.innerHeight
+  if (scrollDistance <= 0) return
   const scrolled = -rect.top
   scrollProgress.value = Math.max(0, Math.min(1, scrolled / scrollDistance))
 }
 
 function onScroll() {
-  if (!scrollTicking) {
-    requestAnimationFrame(() => {
-      updateScroll()
-      scrollTicking = false
-    })
-    scrollTicking = true
-  }
+  if (rafId !== null) cancelAnimationFrame(rafId)
+  rafId = requestAnimationFrame(() => {
+    updateScroll()
+    rafId = null
+  })
 }
 
 onMounted(() => {
   slideInterval = setInterval(nextSlide, 5000)
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', updateScroll, { passive: true })
   updateScroll()
 })
 
 onUnmounted(() => {
   clearInterval(slideInterval)
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', updateScroll)
+  if (rafId !== null) cancelAnimationFrame(rafId)
 })
 </script>

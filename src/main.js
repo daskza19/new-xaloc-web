@@ -9,7 +9,6 @@ import '../styles/hero.css'
 import '../styles/typing.css'
 import '../styles/about.css'
 import '../styles/contact.css'
-import '../styles/tickets.css'
 import '../styles/page-sections.css'
 import '../styles/gallery.css'
 

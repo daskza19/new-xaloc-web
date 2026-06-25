@@ -12,7 +12,6 @@
     <HeroSection />
     <TypingSection />
     <AboutSection />
-    <TicketsSection />
     <GallerySection />
     <ContactSection />
   </div>
@@ -25,7 +24,6 @@ import TheNavigation from './components/TheNavigation.vue'
 import HeroSection from './components/HeroSection.vue'
 import TypingSection from './components/TypingSection.vue'
 import AboutSection from './components/AboutSection.vue'
-import TicketsSection from './components/TicketsSection.vue'
 import GallerySection from './components/GallerySection.vue'
 import ContactSection from './components/ContactSection.vue'
 </script>

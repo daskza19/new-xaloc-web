@@ -172,10 +172,11 @@ export function useLanguage() {
 
   const typingWords = computed(() => translations[currentLanguage.value]?.['hero-typing-words'] || [])
 
+  const BASE = import.meta.env.BASE_URL
   const flags = {
-    ca: '/images/nav/cat_flag.webp',
-    es: '/images/nav/esp_flag.webp',
-    en: '/images/nav/eng_flag.webp'
+    ca: `${BASE}images/nav/cat_flag.webp`,
+    es: `${BASE}images/nav/esp_flag.webp`,
+    en: `${BASE}images/nav/eng_flag.webp`
   }
 
   return { currentLanguage, t, typingWords, changeLanguage, flags }
