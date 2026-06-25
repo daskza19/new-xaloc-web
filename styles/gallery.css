@@ -232,6 +232,12 @@
     margin-bottom: 1.5vh;
 }
 
+.folder-count--soon {
+    font-size: 1.2vh;
+    opacity: 0.7;
+    font-style: italic;
+}
+
 /* ===== ALBUM PANEL (Overlay) ===== */
 .album-backdrop {
     position: fixed;
@@ -783,6 +789,27 @@
     font-family: "Google Sans", sans-serif;
     font-optical-sizing: auto;
     font-size: 1.2rem;
+}
+
+.gallery-photos-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 6vh 2rem;
+    color: rgba(203, 178, 121, 0.7);
+    font-family: "Google Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-size: 1.1rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.gallery-photos-soon-icon {
+    width: 60px;
+    height: 60px;
+    fill: rgba(203, 178, 121, 0.4);
 }
 
 /* ===== RESPONSIVE ===== */

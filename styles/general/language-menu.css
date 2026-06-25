@@ -162,17 +162,21 @@
 }
 
 .horizontal-nav-content {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1vh 1.75vh;
+    padding: 1vh calc(90px + 1.75vh) 1vh 1.75vh;
     max-width: 100%;
     margin: 0 auto;
 }
 
 /* Dropdown de idiomas */
 .horizontal-language-dropdown {
-    position: relative;
+    position: absolute;
+    right: 1.75vh;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
 }
@@ -271,8 +275,6 @@
     justify-content: center;
     gap: 2vh;
     align-items: center;
-    flex: 1;
-    max-width: 600px;
 }
 
 .horizontal-nav-link {

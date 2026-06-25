@@ -5,46 +5,47 @@
       <h2 class="gallery-title">{{ t('nav-gallery') }}</h2>
     </div>
 
-    <!-- Loading -->
-    <div v-if="isLoading" class="gallery-loading">
-      <div class="loading-spinner"></div>
-      <p class="loading-text">{{ t('gallery-loading') }}</p>
-    </div>
-
-    <!-- Error -->
-    <div v-else-if="error" class="gallery-error">
-      <div class="gallery-error-icon">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-      </div>
-      <p class="gallery-error-text">{{ error }}</p>
+    <!-- Empty -->
+    <div v-if="galleries.length === 0" class="gallery-error">
+      <p class="gallery-error-text">{{ t('gallery-no-albums') }}</p>
     </div>
 
     <!-- Folders -->
     <template v-else>
       <div class="folders-carousel">
         <div
-          v-for="(folder, index) in folders"
-          :key="folder.id"
+          v-for="(gallery, index) in galleries"
+          :key="gallery.id"
           class="folder-card"
           :class="{
-            'hidden-folder': isVertical && !showAll && index >= maxVisible && folders.length >= minForShowMore,
-            'fade-folder': isVertical && !showAll && index === 3 && folders.length >= minForShowMore
+            'hidden-folder': isVertical && !showAll && index >= maxVisible && galleries.length >= minForShowMore,
+            'fade-folder':   isVertical && !showAll && index === 3 && galleries.length >= minForShowMore
           }"
-          @click="openAlbum(folder)"
+          @click="openAlbum(gallery)"
         >
-          <div class="folder-icon" :class="{ 'has-logo': folder.logo }" :style="folder.logo ? `background-image:url('${folder.logo.thumbnail}');background-size:contain;background-position:center;background-repeat:no-repeat;` : ''">
-            <svg v-if="!folder.logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <div
+            class="folder-icon"
+            :class="{ 'has-logo': gallery.logo }"
+            :style="gallery.logo ? `background-image:url('${gallery.logo}');background-size:contain;background-position:center;background-repeat:no-repeat;` : ''"
+          >
+            <svg v-if="!gallery.logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
             </svg>
           </div>
-          <p v-if="!folder.logo" class="folder-name">{{ folder.name }}</p>
-          <p class="folder-count" :class="{ 'no-logo': !folder.logo }">{{ folder.photoCount }} <span>{{ t('gallery-photos') }}</span></p>
+          <p v-if="!gallery.logo" class="folder-name">{{ gallery.title }}</p>
+          <p v-if="gallery.photoCount > 0" class="folder-count" :class="{ 'no-logo': !gallery.logo }">
+            {{ gallery.photoCount }} <span>{{ t('gallery-photos') }}</span>
+          </p>
+          <p v-else class="folder-count folder-count--soon" :class="{ 'no-logo': !gallery.logo }">
+            {{ t('gallery-photos-soon') }}
+          </p>
         </div>
       </div>
 
-      <div v-if="isVertical && !showAll && folders.length >= minForShowMore" class="show-more-container">
+      <div
+        v-if="isVertical && !showAll && galleries.length >= minForShowMore"
+        class="show-more-container"
+      >
         <button class="show-more-btn" @click="showAll = true">{{ t('gallery-show-more') }}</button>
       </div>
     </template>
@@ -54,28 +55,36 @@
       <div class="album-panel-overlay" :class="{ active: albumOpen }">
         <div class="album-header">
           <button class="album-back-btn" @click="closeAlbum" aria-label="Cerrar álbum">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12l7 7M5 12l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </button>
           <div class="album-header-center">
-            <div class="album-logo" :class="{ 'has-logo': currentFolder?.logo }">
-              <img v-if="currentFolder?.logo" :src="currentFolder.logo.thumbnail" :alt="currentFolder?.name">
+            <div class="album-logo" :class="{ 'has-logo': currentGallery?.logo }">
+              <img v-if="currentGallery?.logo" :src="currentGallery.logo" :alt="currentGallery.title">
             </div>
-            <h2 v-if="!currentFolder?.logo" class="album-title">{{ currentFolder?.name }}</h2>
+            <h2 v-if="!currentGallery?.logo" class="album-title">{{ currentGallery?.title }}</h2>
           </div>
         </div>
         <div class="album-panel">
-          <div class="photo-grid">
-            <div v-if="loadingPhotos" class="gallery-loading" style="grid-column:1/-1">
-              <div class="loading-spinner"></div>
-              <p class="loading-text">{{ t('gallery-loading-photos') }}</p>
-            </div>
-            <template v-else>
-              <div v-if="photos.length === 0" class="gallery-error-text" style="grid-column:1/-1">{{ t('gallery-no-photos') }}</div>
-              <div v-for="(photo, i) in photos" :key="photo.id" class="photo-item" @click="openViewer(i)">
-                <img :src="photo.thumbnail" :alt="photo.name" loading="lazy">
-                <div class="photo-item-overlay"><p class="photo-item-name">{{ photo.name }}</p></div>
+          <div v-if="currentGallery?.images.length === 0" class="gallery-photos-soon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="gallery-photos-soon-icon">
+              <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-8h3l-4 4-4-4h3V8h2v4z" fill-rule="nonzero"/>
+            </svg>
+            <p>{{ t('gallery-photos-soon') }}</p>
+          </div>
+          <div v-else class="photo-grid">
+            <div
+              v-for="(src, i) in currentGallery?.images"
+              :key="src"
+              class="photo-item"
+              @click="openViewer(i)"
+            >
+              <img :src="src" :alt="`Foto ${i + 1}`" loading="lazy">
+              <div class="photo-item-overlay">
+                <p class="photo-item-name">{{ filename(src) }}</p>
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -86,38 +95,73 @@
       <div class="photo-viewer">
         <div class="photo-viewer-header">
           <button class="album-back-btn" @click="closeViewer" aria-label="Cerrar visor">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12l7 7M5 12l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </button>
-          <h3 class="photo-viewer-title">{{ photos[currentPhotoIndex]?.name }}</h3>
+          <h3 class="photo-viewer-title">{{ filename(photos[currentPhotoIndex] || '') }}</h3>
           <div class="photo-viewer-actions"></div>
         </div>
+
         <div class="photo-viewer-content">
-          <button class="photo-nav-btn photo-nav-prev" @click.stop="prevPhoto" :style="{ opacity: currentPhotoIndex === 0 ? '0.3' : '1', pointerEvents: currentPhotoIndex === 0 ? 'none' : 'auto' }" aria-label="Foto anterior">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <button
+            class="photo-nav-btn photo-nav-prev"
+            @click.stop="prevPhoto"
+            :style="{ opacity: currentPhotoIndex === 0 ? '0.3' : '1', pointerEvents: currentPhotoIndex === 0 ? 'none' : 'auto' }"
+            aria-label="Foto anterior"
+          >
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </button>
-          <div class="photo-carousel" ref="carouselRef" @mousedown="onCarouselMouseDown" @touchstart.passive="onCarouselTouchStart" @touchmove.prevent="onCarouselTouchMove" @touchend="onCarouselTouchEnd">
+
+          <div
+            class="photo-carousel"
+            ref="carouselRef"
+            @mousedown="onMouseDown"
+            @touchstart.passive="onTouchStart"
+            @touchmove.prevent="onTouchMove"
+            @touchend="onTouchEnd"
+          >
             <div class="photo-carousel-track" ref="trackRef">
-              <div v-for="(photo, i) in photos" :key="photo.id" class="carousel-slide" :data-index="i">
+              <div v-for="(src, i) in photos" :key="src" class="carousel-slide">
                 <img
                   class="carousel-image"
-                  :class="{ loaded: loadedImages.has(i) }"
-                  :src="loadedImages.has(i) ? photo.fullSize : undefined"
-                  :alt="photo.name"
+                  :class="{ loaded: loadedSet.has(i) }"
+                  :src="loadedSet.has(i) ? src : undefined"
+                  :alt="`Foto ${i + 1}`"
                   draggable="false"
                 >
-                <div v-if="!loadedImages.has(i)" class="carousel-loader"><div class="loading-spinner"></div></div>
+                <div v-if="!loadedSet.has(i)" class="carousel-loader">
+                  <div class="loading-spinner"></div>
+                </div>
               </div>
             </div>
           </div>
-          <button class="photo-nav-btn photo-nav-next" @click.stop="nextPhoto" :style="{ opacity: currentPhotoIndex === photos.length - 1 ? '0.3' : '1', pointerEvents: currentPhotoIndex === photos.length - 1 ? 'none' : 'auto' }" aria-label="Siguiente foto">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18l6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+          <button
+            class="photo-nav-btn photo-nav-next"
+            @click.stop="nextPhoto"
+            :style="{ opacity: currentPhotoIndex === photos.length - 1 ? '0.3' : '1', pointerEvents: currentPhotoIndex === photos.length - 1 ? 'none' : 'auto' }"
+            aria-label="Siguiente foto"
+          >
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18l6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </button>
         </div>
+
         <div class="photo-viewer-download">
-          <button class="download-btn" @click.stop="downloadPhoto" :disabled="isDownloading">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>{{ isDownloading ? t('gallery-downloading') : t('gallery-download') }}</span>
-          </button>
+          <a
+            class="download-btn"
+            :href="photos[currentPhotoIndex]"
+            :download="filename(photos[currentPhotoIndex] || '')"
+          >
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ t('gallery-download') }}</span>
+          </a>
         </div>
       </div>
     </div>
@@ -125,116 +169,53 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useLanguage } from '../composables/useLanguage.js'
+import galleriesData from 'virtual:gallery'
 
 const { t } = useLanguage()
 
-const API_KEY = 'AIzaSyCe-NEPXAU1tvpsCxu6Segh73LmKXcWTtY'
-const ROOT_FOLDER_ID = '1-WYTmYR3m95RXYnfeoQnXdYSAPW5J7Zi'
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+// Data comes from the Vite plugin — no runtime fetch needed
+const galleries = ref(galleriesData)
 
-const folders = ref([])
-const isLoading = ref(true)
-const error = ref(null)
 const showAll = ref(false)
 const isVertical = ref(false)
 const maxVisible = 4
 const minForShowMore = 4
 
 const albumOpen = ref(false)
-const currentFolder = ref(null)
-const photos = ref([])
-const loadingPhotos = ref(false)
+const currentGallery = ref(null)
 
 const viewerOpen = ref(false)
 const currentPhotoIndex = ref(0)
-const loadedImages = ref(new Set())
-const isDownloading = ref(false)
+const loadedSet = ref(new Set())
 
 const carouselRef = ref(null)
 const trackRef = ref(null)
 
-// Swipe state
-let swipeStartX = 0
-let swipeStartY = 0
-let swipeEndX = 0
-let isSwiping = false
+const photos = computed(() => currentGallery.value?.images || [])
 
-function getDirectUrl(id, size) {
-  return size === 'thumbnail'
-    ? `https://drive.google.com/thumbnail?id=${id}&sz=w400`
-    : `https://drive.google.com/thumbnail?id=${id}&sz=w2000`
+function filename(src) {
+  return decodeURIComponent(src.split('/').pop() || '')
 }
 
-async function fetchFolderContents(folderId) {
-  const mimeQuery = ALLOWED_MIME_TYPES.map(t => `mimeType='${t}'`).join(' or ')
-  const query = `'${folderId}' in parents and (${mimeQuery}) and trashed=false`
-  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=${encodeURIComponent('files(id,name,mimeType,thumbnailLink)')}&key=${API_KEY}&pageSize=100`
-  const res = await fetch(url)
-  if (!res.ok) return { photoCount: 0, logo: null }
-  const data = await res.json()
-  const files = data.files || []
-  const logoFile = files.find(f => f.name.toLowerCase() === 'logo.png')
-  const logo = logoFile ? { thumbnail: getDirectUrl(logoFile.id, 'thumbnail') } : null
-  const photoCount = files.filter(f => f.name.toLowerCase() !== 'logo.png').length
-  return { photoCount, logo }
-}
-
-async function loadFolders() {
-  try {
-    const query = `'${ROOT_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`
-    const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=${encodeURIComponent('files(id,name,createdTime)')}&key=${API_KEY}&orderBy=name`
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data = await res.json()
-    const result = await Promise.all(data.files.map(async folder => {
-      const { photoCount, logo } = await fetchFolderContents(folder.id)
-      return { ...folder, photoCount, logo }
-    }))
-    result.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime))
-    folders.value = result
-  } catch (e) {
-    error.value = t('gallery-loading') + ' - Error'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-async function openAlbum(folder) {
-  currentFolder.value = folder
+// Album
+function openAlbum(gallery) {
+  currentGallery.value = gallery
   albumOpen.value = true
-  loadingPhotos.value = true
   document.body.style.overflow = 'hidden'
-
-  try {
-    const mimeQuery = ALLOWED_MIME_TYPES.map(t => `mimeType='${t}'`).join(' or ')
-    const query = `'${folder.id}' in parents and (${mimeQuery}) and name!='logo.png' and trashed=false`
-    const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=${encodeURIComponent('files(id,name,mimeType,thumbnailLink)')}&key=${API_KEY}&pageSize=100&orderBy=name`
-    const res = await fetch(url)
-    const data = await res.json()
-    photos.value = (data.files || []).map(f => ({
-      id: f.id,
-      name: f.name,
-      thumbnail: f.thumbnailLink || getDirectUrl(f.id, 'thumbnail'),
-      fullSize: getDirectUrl(f.id, 'full'),
-    }))
-  } finally {
-    loadingPhotos.value = false
-  }
 }
 
 function closeAlbum() {
   albumOpen.value = false
   document.body.style.overflow = ''
-  currentFolder.value = null
-  photos.value = []
 }
 
+// Viewer
 function openViewer(index) {
   currentPhotoIndex.value = index
   viewerOpen.value = true
-  loadedImages.value = new Set()
+  loadedSet.value = new Set()
   nextTick(() => {
     updateCarousel(false)
     loadNearby(index)
@@ -243,27 +224,26 @@ function openViewer(index) {
 
 function closeViewer() {
   viewerOpen.value = false
-  if (trackRef.value) { trackRef.value.style.transform = ''; trackRef.value.style.transition = '' }
+  if (trackRef.value) trackRef.value.style.transform = ''
 }
 
 function updateCarousel(animate = true) {
   if (!trackRef.value) return
-  const offset = -currentPhotoIndex.value * 100
   trackRef.value.style.transition = animate ? 'transform 0.3s ease-out' : 'none'
-  trackRef.value.style.transform = `translateX(${offset}%)`
+  trackRef.value.style.transform = `translateX(${-currentPhotoIndex.value * 100}%)`
 }
 
 function loadNearby(index) {
-  const toLoad = [index - 1, index, index + 1].filter(i => i >= 0 && i < photos.value.length)
-  toLoad.forEach(i => {
-    if (loadedImages.value.has(i)) return
+  const imgs = photos.value
+  ;[index - 1, index, index + 1].filter(i => i >= 0 && i < imgs.length).forEach(i => {
+    if (loadedSet.value.has(i)) return
     const img = new Image()
     img.onload = () => {
-      const newSet = new Set(loadedImages.value)
-      newSet.add(i)
-      loadedImages.value = newSet
+      const next = new Set(loadedSet.value)
+      next.add(i)
+      loadedSet.value = next
     }
-    img.src = photos.value[i].fullSize
+    img.src = imgs[i]
   })
 }
 
@@ -283,93 +263,54 @@ function nextPhoto() {
   }
 }
 
-async function downloadPhoto() {
-  const photo = photos.value[currentPhotoIndex.value]
-  isDownloading.value = true
-  try {
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${photo.id}?alt=media&key=${API_KEY}`)
-    if (!res.ok) throw new Error()
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = photo.name || `photo_${photo.id}.jpg`
-    document.body.appendChild(a); a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  } catch {
-    window.open(`https://drive.google.com/uc?export=download&id=${photo.id}`, '_blank')
-  } finally {
-    isDownloading.value = false
-  }
+// Swipe / drag
+let swipeStartX = 0, swipeStartY = 0, swipeEndX = 0, isSwiping = false
+
+function startSwipe(x, y) {
+  swipeStartX = x; swipeStartY = y; swipeEndX = x; isSwiping = true
+  if (trackRef.value) trackRef.value.style.transition = 'none'
 }
 
-// Carousel swipe
-function onCarouselMouseDown(e) {
+function moveSwipe(x, y) {
+  if (!isSwiping || !carouselRef.value || !trackRef.value) return
+  swipeEndX = x
+  const diffX = swipeStartX - x
+  const diffY = Math.abs(swipeStartY - y)
+  if (Math.abs(diffX) <= diffY) return
+  const base = -currentPhotoIndex.value * 100
+  let offset = base + (-diffX / carouselRef.value.offsetWidth) * 100
+  const min = -(photos.value.length - 1) * 100
+  if (offset > 0) offset *= 0.3
+  if (offset < min) offset = min + (offset - min) * 0.3
+  trackRef.value.style.transform = `translateX(${offset}%)`
+}
+
+function endSwipe() {
+  if (!isSwiping) return
+  isSwiping = false
+  const diff = swipeStartX - swipeEndX
+  if (Math.abs(diff) > 50) { diff > 0 ? nextPhoto() : prevPhoto() }
+  else updateCarousel(true)
+}
+
+function onMouseDown(e) {
   if (e.target.closest('.photo-nav-btn') || e.target.closest('.download-btn')) return
   e.preventDefault()
-  swipeStartX = e.clientX; swipeStartY = e.clientY; swipeEndX = e.clientX
-  isSwiping = true
-  if (trackRef.value) trackRef.value.style.transition = 'none'
+  startSwipe(e.clientX, e.clientY)
   if (carouselRef.value) carouselRef.value.style.cursor = 'grabbing'
 }
-
-function onCarouselMouseMove(e) {
+function onGlobalMouseMove(e) { if (isSwiping) moveSwipe(e.clientX, e.clientY) }
+function onGlobalMouseUp() {
   if (!isSwiping) return
-  swipeEndX = e.clientX
-  if (!carouselRef.value || !trackRef.value) return
-  const diffX = swipeStartX - swipeEndX
-  const base = -currentPhotoIndex.value * 100
-  let offset = base + (-diffX / carouselRef.value.offsetWidth) * 100
-  const min = -(photos.value.length - 1) * 100
-  if (offset > 0) offset = offset * 0.3
-  if (offset < min) offset = min + (offset - min) * 0.3
-  trackRef.value.style.transform = `translateX(${offset}%)`
-}
-
-function onCarouselMouseUp() {
-  if (!isSwiping) return
-  isSwiping = false
   if (carouselRef.value) carouselRef.value.style.cursor = 'grab'
-  const diff = swipeStartX - swipeEndX
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) nextPhoto(); else prevPhoto()
-  } else {
-    updateCarousel(true)
-  }
+  endSwipe()
 }
 
-function onCarouselTouchStart(e) {
-  swipeStartX = e.touches[0].clientX; swipeStartY = e.touches[0].clientY
-  swipeEndX = swipeStartX; isSwiping = true
-  if (trackRef.value) trackRef.value.style.transition = 'none'
-}
+function onTouchStart(e) { startSwipe(e.touches[0].clientX, e.touches[0].clientY) }
+function onTouchMove(e) { moveSwipe(e.touches[0].clientX, e.touches[0].clientY) }
+function onTouchEnd() { endSwipe() }
 
-function onCarouselTouchMove(e) {
-  if (!isSwiping) return
-  swipeEndX = e.touches[0].clientX
-  const diffX = swipeStartX - swipeEndX
-  const diffY = Math.abs(swipeStartY - e.touches[0].clientY)
-  if (Math.abs(diffX) <= diffY) return
-  if (!carouselRef.value || !trackRef.value) return
-  const base = -currentPhotoIndex.value * 100
-  let offset = base + (-diffX / carouselRef.value.offsetWidth) * 100
-  const min = -(photos.value.length - 1) * 100
-  if (offset > 0) offset = offset * 0.3
-  if (offset < min) offset = min + (offset - min) * 0.3
-  trackRef.value.style.transform = `translateX(${offset}%)`
-}
-
-function onCarouselTouchEnd() {
-  if (!isSwiping) return
-  isSwiping = false
-  const diff = swipeStartX - swipeEndX
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) nextPhoto(); else prevPhoto()
-  } else {
-    updateCarousel(true)
-  }
-}
-
+// Keyboard
 function onKeydown(e) {
   if (viewerOpen.value) {
     if (e.key === 'ArrowLeft') prevPhoto()
@@ -388,15 +329,14 @@ onMounted(() => {
   isVertical.value = window.matchMedia('(max-aspect-ratio: 1/1)').matches
   window.addEventListener('resize', onResize)
   document.addEventListener('keydown', onKeydown)
-  document.addEventListener('mousemove', onCarouselMouseMove)
-  document.addEventListener('mouseup', onCarouselMouseUp)
-  loadFolders()
+  document.addEventListener('mousemove', onGlobalMouseMove)
+  document.addEventListener('mouseup', onGlobalMouseUp)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', onResize)
   document.removeEventListener('keydown', onKeydown)
-  document.removeEventListener('mousemove', onCarouselMouseMove)
-  document.removeEventListener('mouseup', onCarouselMouseUp)
+  document.removeEventListener('mousemove', onGlobalMouseMove)
+  document.removeEventListener('mouseup', onGlobalMouseUp)
 })
 </script>
